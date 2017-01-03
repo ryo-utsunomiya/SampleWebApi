@@ -43,22 +43,36 @@ namespace SampleWebApi.Controllers
                 .SingleOrDefaultAsync(m => m.Id == id);
         }
 
-        // POST api/values
+        // POST api/People
         [HttpPost]
-        public void Post([FromBody]string value)
+        public async Task<int> Post([FromBody]Person person)
         {
+            _context.Add(person);
+            await _context.SaveChangesAsync();
+            return person.Id;
         }
 
-        // PUT api/values/5
+        // PUT api/People/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public async Task<int> Put(int id, [FromBody]Person person)
         {
+            if (id != person.Id)
+            {
+                return -1;
+            }
+
+            _context.Update(person);
+            await _context.SaveChangesAsync();
+            return person.Id;
         }
 
-        // DELETE api/values/5
+        // DELETE api/People/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
+            var person = await _context.Person.SingleOrDefaultAsync(m => m.Id == id);
+            _context.Person.Remove(person);
+            await _context.SaveChangesAsync();
         }
     }
 }
